@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6484501978643430755}
   - component: {fileID: 8192769798892768876}
   m_Layer: 0
-  m_Name: CellContainer
+  m_Name: Cell
   m_TagString: Cell
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,17 +47,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec41bed8ad1e7a84e91171daca3d2b71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  symbiosisGene: 1
-  divisionSpeed: 1
-  lifespan: 5
+  symbiosisGene: 0
+  divisionSpeed: 5
+  lifespan: 20
+  energy: 0
   speed: 1
   size: 1
   viewRadius: 5
   mutationChance: 0
   resistance: 0
   color: 0
-  collider: {fileID: 7578838849010772402}
-  trigger: {fileID: 8192769798892768876}
+  cellCollider: {fileID: 7578838849010772402}
+  cellTrigger: {fileID: 8192769798892768876}
   body: {fileID: 6484501978643430755}
 --- !u!135 &7578838849010772402
 SphereCollider:
@@ -112,9 +113,8 @@ GameObject:
   - component: {fileID: 5100720024142109531}
   - component: {fileID: 7153493273891751925}
   - component: {fileID: 6385259128265317267}
-  - component: {fileID: 7639586295960791192}
   m_Layer: 0
-  m_Name: Cell
+  m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -183,16 +183,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &7639586295960791192
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7285393826614302123}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}

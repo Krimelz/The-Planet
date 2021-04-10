@@ -10,6 +10,7 @@ public class Cell : MonoBehaviour
     [SerializeField] private bool symbiosisGene;
     [SerializeField] private float divisionSpeed;
     [SerializeField] private float lifespan;
+    [SerializeField] private float energy;
     [SerializeField] private float speed;
     [SerializeField] private float size;
     [SerializeField] private float viewRadius;
@@ -17,12 +18,14 @@ public class Cell : MonoBehaviour
     [SerializeField] private float resistance;
     [SerializeField] private float color;
     [Space]
-    [SerializeField] new SphereCollider collider = null;
-    [SerializeField] SphereCollider trigger = null;
+    [SerializeField] SphereCollider cellCollider = null;
+    [SerializeField] SphereCollider cellTrigger = null;
     [SerializeField] Rigidbody body = null;
 
     private Vector3 movement;
+    private Coroutine changeMovementDirection;
     private HashSet<Cell> cells = new HashSet<Cell>();
+    private HashSet<Food> foods = new HashSet<Food>();
 
     public bool SymbiosisGene
     {
@@ -36,45 +39,66 @@ public class Cell : MonoBehaviour
     {
         SetSize();
         SetViewRadius();
+        SetEnergy();
 
         StartCoroutine(Division());
-        StartCoroutine(ChangeMovementDirection());
+        changeMovementDirection = StartCoroutine(ChangeMovementDirection());
         
         Destroy(gameObject, lifespan);
     }
 
     void FixedUpdate()
     {
-        Move();
         CheckCells();
+        CheckEnergy();
     }
 
     private void SetSize()
     {
-        collider.radius = size / 2f;
+        cellCollider.radius = size / 2f;
         transform.localScale = new Vector3(size, size, size);
     }
 
     private void SetViewRadius()
     {
-        trigger.radius = viewRadius;
+        cellTrigger.radius = viewRadius;
+    }
+
+    private void SetEnergy()
+    {
+        energy = lifespan / 2f;
+    }
+
+    public void InverseMovement()
+    {
+        movement = -movement;
+        Move();
     }
 
     private void Move()
     {
-        body.AddForce(movement * speed);
-        //body.velocity = movement * speed;
+        body.AddForce(movement * speed, ForceMode.VelocityChange);
+    }
+
+    private void Eat()
+    {
+        energy += 3f;
     }
 
     private IEnumerator ChangeMovementDirection()
     {
-        yield return new WaitForSeconds(UnityEngine.Random.Range(1f, 5f));
+        while (true)
+        {
+            movement = new Vector3(
+                UnityEngine.Random.Range(-1f, 1f),
+                UnityEngine.Random.Range(-1f, 1f),
+                UnityEngine.Random.Range(-1f, 1f)
+            ).normalized;
 
-        movement = new Vector3(
-            UnityEngine.Random.Range(-1f, 1f),
-            UnityEngine.Random.Range(-1f, 1f),
-            UnityEngine.Random.Range(-1f, 1f)
-        ).normalized;
+            Move();
+            yield return new WaitForSeconds(UnityEngine.Random.Range(1f, 5f));
+        }
+        
     }
 
     private void CheckCells()
@@ -83,7 +107,17 @@ public class Cell : MonoBehaviour
         {
             Vector3 direction = (transform.position - cell.transform.position).normalized;
 
-            body.AddForce(-direction * 20f);
+            body.AddForce(-direction * 10f);
+        }
+    }
+
+    private void CheckEnergy()
+    {
+        energy -= Time.fixedDeltaTime;
+
+        if (energy <= 0f)
+        {
+            Destroy(gameObject);
         }
     }
 
@@ -99,6 +133,21 @@ public class Cell : MonoBehaviour
     private void SpawnCell()
     {
         GameObject newCell = Instantiate(gameObject);
+        newCell.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        newCell.GetComponent<Cell>().Move();
+
+        body.velocity = Vector3.zero;
+        Move();
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.collider.CompareTag("Food"))
+        {
+            Eat();
+            StartCoroutine(ChangeMovementDirection());
+            Destroy(collision.gameObject);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -112,11 +161,18 @@ public class Cell : MonoBehaviour
                 cell.RemoveCell += (cell) =>
                 {
                     cells.Remove(cell);
-                    //Debug.Log($"{cell.GetInstanceID()}, {this.GetInstanceID()}");
                 };
 
                 cells.Add(cell);
             }
+        }
+
+        if (other.CompareTag("Food"))
+        {
+            StopCoroutine(changeMovementDirection);
+
+            movement = -(transform.position - other.transform.position).normalized;
+            Move();
         }
     }
 
