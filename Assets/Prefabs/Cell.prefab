@@ -47,11 +47,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec41bed8ad1e7a84e91171daca3d2b71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  symbiosisGene: 0
-  divisionSpeed: 5
-  lifespan: 20
-  energy: 0
-  speed: 1
+  cellPrefab: {fileID: 6633194993410945559}
+  symbiosisGene: 1
+  divisionSpeed: 7
+  startEnergy: 5
+  speed: 5
   size: 1
   viewRadius: 5
   mutationChance: 0
@@ -87,7 +87,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!135 &8192769798892768876
 SphereCollider:
