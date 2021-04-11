@@ -11,8 +11,13 @@ public class SpawnCell : MonoBehaviour
         Spawn();
     }
 
-    private void Spawn()
+    public void Spawn()
     {
         GameObject cell = Instantiate(cellPrefab);
+
+        for (int i = 0; i < 32; i++)
+        {
+            cell.GetComponent<Cell>().Mutate();
+        }
     }
 }
