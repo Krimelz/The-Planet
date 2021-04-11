@@ -118,7 +118,8 @@ public class SceneManager : MonoBehaviour
 #elif UNITY_ANDROID
         if (Input.touchCount == 1)
         {
-            selectedCell = GetCellOnScreen(Input.GetTouch(0).position);
+            if (selectedCell == null)
+                selectedCell = GetCellOnScreen(Input.GetTouch(0).position);
 
             if (selectedCell != null)
             {
