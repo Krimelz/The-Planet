@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7578838849010772402}
   - component: {fileID: 6484501978643430755}
   - component: {fileID: 8192769798892768876}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Cell
   m_TagString: Cell
   m_Icon: {fileID: 0}
@@ -53,12 +53,14 @@ MonoBehaviour:
   startEnergy: 5
   speed: 5
   size: 1
+  viewRadius: 10
   mutationChance: 0.75
   resistance: 0
   color: 0
   gen: 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
   body: {fileID: 6484501978643430755}
   energy: 0
+  food: {fileID: 0}
 --- !u!135 &7578838849010772402
 SphereCollider:
   m_ObjectHideFlags: 0

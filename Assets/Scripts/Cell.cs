@@ -6,6 +6,7 @@ using UnityEngine;
 public class Cell : MonoBehaviour
 {
     public event Action<Cell> RemoveCell;
+    public static event Action<Cell> DivCell;
     public GameObject cellPrefab;
 
     [SerializeField] private bool symbiosisGene;
@@ -14,11 +15,11 @@ public class Cell : MonoBehaviour
     [SerializeField] private float startEnergy;
     [SerializeField] private float speed;
     [SerializeField] private float size;
-    //[SerializeField] private float viewRadius;
+    [SerializeField] private float viewRadius;
     [SerializeField] private float mutationChance = 0.75f;
     [SerializeField] private float resistance;
     [SerializeField] private float color;
-    [SerializeField] private int[] gen = new int[24];
+    public int[] gen = new int[24];
     [Space]
     [SerializeField] private Rigidbody body = null;
 
@@ -27,7 +28,7 @@ public class Cell : MonoBehaviour
     private bool moveToFood = false;
     private Coroutine changeMovementDirection;
     private HashSet<Cell> cells = new HashSet<Cell>();
-    private HashSet<Food> foods = new HashSet<Food>();
+    [SerializeField] private Food food = null;
 
     public bool SymbiosisGene
     {
@@ -47,7 +48,7 @@ public class Cell : MonoBehaviour
         float chance = UnityEngine.Random.Range(0f, 1f);
         if (chance <= mutationChance)
         {
-            gen[UnityEngine.Random.Range(0, 24)] = UnityEngine.Random.Range(0, 5);
+            gen[UnityEngine.Random.Range(0, 24)] = UnityEngine.Random.Range(1, 5);
         }
     }
 
@@ -101,7 +102,6 @@ public class Cell : MonoBehaviour
         SetSize();
         SetEnergy();
 
-        StartCoroutine(Division());
         changeMovementDirection = StartCoroutine(ChangeMovementDirection());
     }
 
@@ -109,6 +109,9 @@ public class Cell : MonoBehaviour
     {
         CheckCells();
         CheckEnergy();
+        if (!moveToFood)
+            FindFood();
+        Move();
     }
 
     private void SetSize()
@@ -144,6 +147,11 @@ public class Cell : MonoBehaviour
 
     private void Move()
     {
+        if (food != null)
+        {
+            movement = -(transform.position - food.transform.position).normalized;
+        }
+
         body.velocity = movement * speed;
     }
 
@@ -165,6 +173,7 @@ public class Cell : MonoBehaviour
         }
 
         Debug.Log($"я поел! {moveToFood}");
+        food = null;
     }
 
     private IEnumerator ChangeMovementDirection()
@@ -196,6 +205,11 @@ public class Cell : MonoBehaviour
 
     private void CheckEnergy()
     {
+        if (energy >= divisionSpeed)
+        {
+            DivCell?.Invoke(this);
+        }
+
         energy -= Time.fixedDeltaTime;
 
         if (energy <= 0f)
@@ -204,15 +218,39 @@ public class Cell : MonoBehaviour
         }
     }
 
-    private IEnumerator Division()
+    private void CheckFood()
     {
-        while (true)
+        if (food != null)
         {
-            yield return new WaitForSeconds(divisionSpeed + UnityEngine.Random.Range(-2f, 2f));
-            SpawnCell(gen);
-            SpawnCell(gen);
-            Destroy(gameObject);
+            MoveToFood();
         }
+        else
+        {
+            if (changeMovementDirection == null)
+                changeMovementDirection = StartCoroutine(ChangeMovementDirection());
+        }
+    }
+
+    private void FindFood()
+    {
+        Collider[] foods = Physics.OverlapSphere(transform.position, viewRadius, 1 << 8);
+        float minDistance = Mathf.Infinity;
+
+        foreach (var f in foods)
+        {
+            if (Vector3.Distance(transform.position, f.transform.position) < minDistance)
+            {
+                food = f.GetComponent<Food>();
+            }
+        }
+
+        CheckFood();
+    }
+
+    private void MoveToFood()
+    {
+        moveToFood = true;
+        StopCoroutine(changeMovementDirection);
     }
     
     private void SpawnCell(int[] gen)
@@ -230,7 +268,6 @@ public class Cell : MonoBehaviour
         if (collision.collider.CompareTag("Food"))
         {
             Eat(collision.collider.GetComponent<Food>().energy);
-            changeMovementDirection = StartCoroutine(ChangeMovementDirection());
             Destroy(collision.gameObject);
         }
     }
@@ -250,15 +287,6 @@ public class Cell : MonoBehaviour
 
                 cells.Add(cell);
             }
-        }
-
-        if (other.CompareTag("Food") && !moveToFood)
-        {
-            moveToFood = true;
-            Debug.Log($"¬ижу еду! {moveToFood}");
-            StopCoroutine(changeMovementDirection);
-            movement = -(transform.position - other.transform.position).normalized;
-            Move();
         }
     }
 

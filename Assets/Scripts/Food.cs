@@ -4,10 +4,5 @@ using UnityEngine;
 
 public class Food : MonoBehaviour
 {
-    public float energy = 3f;
-
-    private void OnDestroy()
-    {
-        Debug.Log("Меня захавали!");
-    }
+    public float energy = 5f;
 }
