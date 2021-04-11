@@ -22,7 +22,9 @@ public class Cell : MonoBehaviour
     public int[] gen = new int[24];
     [Space]
     [SerializeField] private Rigidbody body = null;
-
+    [SerializeField] MeshRenderer outside = null;
+    [SerializeField] MeshRenderer middle = null;
+    [SerializeField] MeshRenderer inside = null;
     [SerializeField] private float energy;
     private Vector3 movement;
     private bool moveToFood = false;
@@ -126,9 +128,9 @@ public class Cell : MonoBehaviour
 
     private void SetColor()
     {
-        byte r = 0;
-        byte g = 0;
-        byte b = 0;
+        float r = 0;
+        float g = 0;
+        float b = 0;
 
         for (int i = 0; i < 8; ++i)
         {
@@ -145,7 +147,13 @@ public class Cell : MonoBehaviour
             b += (byte)gen[i];
         }
 
-        GetComponentInChildren<MeshRenderer>().material.color = new Color(r / 32f, g / 32f, b / 32f);
+        r /= 32f;
+        g /= 32f;
+        b /= 32f;
+
+        outside.material.color = new Color(r, g, b, 0.35f);
+        middle.material.color = new Color(r, g, b, 0.65f);
+        inside.material.color = new Color(r, g, b, 1f);
     }
 
     private void SetSize()
