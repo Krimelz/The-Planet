@@ -158,6 +158,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62b2484cd8c0e0640bdcbbd27ac69eb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startFoodAmount: 100
   foodPrefab: {fileID: 8425429852038551873, guid: d6528d6af007b1a4c8cd9473910e16a2, type: 3}
   foodSpawnArea: {x: 10, y: 10, z: 10}
   foodSpawnRate: 1

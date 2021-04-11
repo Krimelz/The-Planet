@@ -13,16 +13,17 @@ public class Cell : MonoBehaviour
     [SerializeField] private float speed;
     [SerializeField] private float size;
     [SerializeField] private float viewRadius;
-    [SerializeField] private float mutationChance;
+    [SerializeField] private float mutationChance = 0.75f;
     [SerializeField] private float resistance;
     [SerializeField] private float color;
+    [SerializeField] private int[] gen = new int[24];
     [Space]
     [SerializeField] SphereCollider cellCollider = null;
     [SerializeField] SphereCollider cellTrigger = null;
     [SerializeField] Rigidbody body = null;
 
     private Vector3 movement;
-    private float energy;
+    [SerializeField] private float energy;
     private bool moveToFood = false;
     private Coroutine changeMovementDirection;
     private HashSet<Cell> cells = new HashSet<Cell>();
@@ -36,8 +37,48 @@ public class Cell : MonoBehaviour
         }
     }
 
+    void Mutate()
+    {
+        if (UnityEngine.Random.Range(0f, 1f) <= mutationChance)
+        {
+            gen[UnityEngine.Random.Range(0, 24)] = UnityEngine.Random.Range(0, 5);
+        }
+    }
+
+    bool CheckGen()
+    {
+        int count = 0;
+        for (int g = 1; g <= 4; g++)
+        {
+            for (int i = 0; i < 24; i++) if (gen[i] == g) count++;
+            if (count > 8) return false;
+            count = 0;
+        }
+        return true;
+    }
+
+    void GenSettings()
+    {
+        for (int i = 0; i < 4; i++) divisionSpeed += gen[i];
+        for (int i = 4; i < 8; i++) startEnergy += gen[i];
+        for (int i = 8; i < 12; i++) speed += gen[i];
+        for (int i = 12; i < 16; i++) size += gen[i];
+        for (int i = 16; i < 20; i++) viewRadius += gen[i];
+        for (int i = 20; i < 24; i++) resistance += gen[i];
+
+        divisionSpeed = 25 - divisionSpeed;
+        startEnergy += 4;
+        speed /= 2;
+        viewRadius = 3 + viewRadius / 4;
+    }
+
     void Start()
     {
+        for(int i = 0; i < 24; i++)
+        {
+            Mutate();
+        }
+        GenSettings();
         SetSize();
         SetViewRadius();
         SetEnergy();
@@ -155,16 +196,19 @@ public class Cell : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(divisionSpeed);
-            SpawnCell();
-            SpawnCell();
+            yield return new WaitForSeconds(divisionSpeed + UnityEngine.Random.Range(-2f, 2f));
+            SpawnCell(gen);
+            SpawnCell(gen);
             Destroy(gameObject);
         }
     }
-
-    private void SpawnCell()
+    
+    private void SpawnCell(int[] gen)
     {
+
         GameObject newCell = Instantiate(cellPrefab);
+        newCell.GetComponent<Cell>().gen = gen;
+        newCell.GetComponent<Cell>().Mutate();
         newCell.GetComponent<Rigidbody>().velocity = Vector3.zero;
         newCell.GetComponent<Cell>().Move();
     }

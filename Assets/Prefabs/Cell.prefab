@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cellPrefab: {fileID: 6633194993410945559}
-  symbiosisGene: 1
+  symbiosisGene: 0
   divisionSpeed: 7
   startEnergy: 5
   speed: 5
