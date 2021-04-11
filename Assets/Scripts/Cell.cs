@@ -7,7 +7,7 @@ public class Cell : MonoBehaviour
 {
     public event Action<Cell> RemoveCell;
     public static event Action<Cell> DivCell;
-    public GameObject cellPrefab;
+    public GameObject foodPrefab;
 
     [SerializeField] private bool symbiosisGene;
 
@@ -42,6 +42,14 @@ public class Cell : MonoBehaviour
             symbiosisGene = value;
         }
     }
+
+    public float StartEnergy => startEnergy;
+
+    public float DivisionSpeed => divisionSpeed;
+
+    public float Speed => speed;
+
+    public float Size => size;
 
     public void Mutate()
     {
@@ -93,12 +101,14 @@ public class Cell : MonoBehaviour
         divisionSpeed = 40f - divisionSpeed;
         startEnergy += 5f;
         size /= 4f;
+        size += 0.1f;
         speed /= 2f;
     }
 
     void Start()
     {
         GenSettings();
+        SetColor();
         SetSize();
         SetEnergy();
 
@@ -112,6 +122,30 @@ public class Cell : MonoBehaviour
         if (!moveToFood)
             FindFood();
         Move();
+    }
+
+    private void SetColor()
+    {
+        byte r = 0;
+        byte g = 0;
+        byte b = 0;
+
+        for (int i = 0; i < 8; ++i)
+        {
+            r += (byte)gen[i];
+        }
+
+        for (int i = 8; i < 16; i++)
+        {
+            g += (byte)gen[i];
+        }
+
+        for (int i = 16; i < 24; i++)
+        {
+            b += (byte)gen[i];
+        }
+
+        GetComponentInChildren<MeshRenderer>().material.color = new Color(r / 32f, g / 32f, b / 32f);
     }
 
     private void SetSize()
@@ -159,12 +193,12 @@ public class Cell : MonoBehaviour
     {
         if (cells.Count == 0)
         {
-            AddEnergy(3f);
+            AddEnergy(foodEnergy);
             moveToFood = false;
         }
         else
         {
-            AddEnergy(3f / cells.Count);
+            AddEnergy(foodEnergy / cells.Count);
 
             foreach (var cell in cells)
             {
@@ -214,7 +248,7 @@ public class Cell : MonoBehaviour
 
         if (energy <= 0f)
         {
-            Destroy(gameObject);
+            Die();
         }
     }
 
@@ -252,15 +286,25 @@ public class Cell : MonoBehaviour
         moveToFood = true;
         StopCoroutine(changeMovementDirection);
     }
-    
-    private void SpawnCell(int[] gen)
-    {
 
-        GameObject newCell = Instantiate(cellPrefab);
-        newCell.GetComponent<Cell>().gen = gen;
-        for(int i =0; i < 8; i++)  newCell.GetComponent<Cell>().Mutate();
-        newCell.GetComponent<Rigidbody>().velocity = Vector3.zero;
-        newCell.GetComponent<Cell>().Move();
+    private void SpawnFood()
+    {
+        for (int i = 0; i < size; ++i)
+        {
+            Vector3 shift = new Vector3(
+                UnityEngine.Random.Range(-1f, 1f),
+                UnityEngine.Random.Range(-1f, 1f),
+                UnityEngine.Random.Range(-1f, 1f)
+            ).normalized;
+
+            Instantiate(foodPrefab, transform.position + shift, Quaternion.identity);
+        }
+    }
+
+    private void Die()
+    {
+        SpawnFood();
+        Destroy(gameObject);
     }
 
     private void OnCollisionEnter(Collision collision)

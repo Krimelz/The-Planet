@@ -47,14 +47,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec41bed8ad1e7a84e91171daca3d2b71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cellPrefab: {fileID: 6633194993410945559}
+  foodPrefab: {fileID: 8425429852038551873, guid: d6528d6af007b1a4c8cd9473910e16a2, type: 3}
   symbiosisGene: 0
   divisionSpeed: 7
   startEnergy: 5
   speed: 5
   size: 1
   viewRadius: 10
-  mutationChance: 0.75
+  mutationChance: 0.2
   resistance: 0
   color: 0
   gen: 000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000

@@ -32,7 +32,7 @@ public class SpawnCell : MonoBehaviour
             newCells[i] = Instantiate(cellPrefab, cell.transform.position, Quaternion.identity);
             newCells[i].GetComponent<Cell>().gen = cell.gen;
 
-            for (int j = 0; j < 24; ++j)
+            for (int j = 0; j < 5; ++j)
             {
                 newCells[i].GetComponent<Cell>().Mutate();
             }
