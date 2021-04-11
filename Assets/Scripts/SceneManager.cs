@@ -12,6 +12,7 @@ public class SceneManager : MonoBehaviour
         Sphere
     }
 
+    public Viewer viewer;
     public GameObject cellInfo;
     public DNA dna;
     public Text startEnergy;
@@ -26,6 +27,7 @@ public class SceneManager : MonoBehaviour
     public float foodSpawnRate;
 
     private Cell selectedCell = null;
+    private bool isCellViewing = false;
 
     private void Start()
     {
@@ -54,6 +56,16 @@ public class SceneManager : MonoBehaviour
         }
 
         StartCoroutine(SpawnFood());
+
+        Cell.Close += CellClose;
+    }
+
+    private void CellClose(Cell cell)
+    {
+        if (cell == selectedCell)
+        {
+            HideInfo();
+        }
     }
 
     private IEnumerator SpawnFood()
@@ -85,12 +97,18 @@ public class SceneManager : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
+        if (isCellViewing)
+        {
+            viewer.Shift(selectedCell);
+        }
+
 #if UNITY_STANALONE || UNITY_EDITOR
         if (Input.GetMouseButtonDown(0))
         {
-            selectedCell = GetCellOnScreen(Input.mousePosition); 
+            if (selectedCell == null)
+                selectedCell = GetCellOnScreen(Input.mousePosition);
 
             if (selectedCell != null)
             {
@@ -100,7 +118,7 @@ public class SceneManager : MonoBehaviour
 #elif UNITY_ANDROID
         if (Input.touchCount == 1)
         {
-            selectedCell = GetCellOnScreen(Input.GetTouch(0));
+            selectedCell = GetCellOnScreen(Input.GetTouch(0).position);
 
             if (selectedCell != null)
             {
@@ -117,9 +135,13 @@ public class SceneManager : MonoBehaviour
         Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask: 1 << 9);
 
         if (hit.collider != null)
+        {
             return hit.collider.GetComponent<Cell>();
+        }
         else
+        {
             return null;
+        }
     }
 
     private void ShowInfo()
@@ -135,7 +157,17 @@ public class SceneManager : MonoBehaviour
 
     public void HideInfo()
     {
+        selectedCell = null;
         cellInfo.SetActive(false);
+        isCellViewing = false;
+    }
+
+    public void ToCell()
+    {
+        if (selectedCell != null)
+        {
+            isCellViewing = true;
+        }
     }
 
     private void OnDrawGizmos()

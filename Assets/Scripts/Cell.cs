@@ -7,6 +7,7 @@ public class Cell : MonoBehaviour
 {
     public event Action<Cell> RemoveCell;
     public static event Action<Cell> DivCell;
+    public static event Action<Cell> Close;
     public GameObject foodPrefab;
 
     [SerializeField] private bool symbiosisGene;
@@ -214,7 +215,6 @@ public class Cell : MonoBehaviour
             }
         }
 
-        Debug.Log($"Я поел! {moveToFood}");
         food = null;
     }
 
@@ -222,7 +222,6 @@ public class Cell : MonoBehaviour
     {
         while (true)
         {
-            Debug.Log("Направление изменено");
             movement = new Vector3(
                 UnityEngine.Random.Range(-1f, 1f),
                 UnityEngine.Random.Range(-1f, 1f),
@@ -358,6 +357,7 @@ public class Cell : MonoBehaviour
     private void OnDestroy()
     {
         RemoveCell?.Invoke(this);
+        Close?.Invoke(this);
     }
 
     private void OnDrawGizmosSelected()

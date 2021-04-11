@@ -23,12 +23,12 @@ public class Viewer : MonoBehaviour
     private float shiftY;
     private float oldDistance;
 
-    void Start()
+    private void Start()
     {
         mainCamera = Camera.main;
     }
 
-    void Update()
+    private void FixedUpdate()
     {
         if (Input.touchCount == 0)
         {
@@ -58,17 +58,17 @@ public class Viewer : MonoBehaviour
         transform.position = Vector3.Lerp(
             transform.position,
             shift,
-            shiftLerp * Time.deltaTime);
+            shiftLerp * Time.fixedDeltaTime);
 
         transform.rotation = Quaternion.Slerp(
             transform.rotation,
             rotation,
-            rotationLerp * Time.deltaTime);
+            rotationLerp * Time.fixedDeltaTime);
 
         mainCamera.transform.localPosition = new Vector3(
             0f,
             0f,
-            Mathf.Lerp(mainCamera.transform.localPosition.z, distanceToObject, scaleLerp * Time.deltaTime));
+            Mathf.Lerp(mainCamera.transform.localPosition.z, distanceToObject, scaleLerp * Time.fixedDeltaTime));
     }
 
     private void Rotate()
@@ -103,9 +103,18 @@ public class Viewer : MonoBehaviour
 
     private void Shift()
     {
-        shiftX += Input.GetTouch(0).deltaPosition.x * shiftSpeed * Time.deltaTime;
-        shiftY += Input.GetTouch(0).deltaPosition.y * shiftSpeed * Time.deltaTime;
+        shiftX += Input.GetTouch(0).deltaPosition.x * shiftSpeed * Time.fixedDeltaTime;
+        shiftY += Input.GetTouch(0).deltaPosition.y * shiftSpeed * Time.fixedDeltaTime;
 
         shift = rotation * new Vector3(-shiftX, -shiftY, 0f);
+    }
+
+    public void Shift(Cell cell)
+    {
+        shiftX = cell.transform.position.x;
+        shiftY = cell.transform.position.y;
+        float shiftZ = cell.transform.position.z;
+
+        shift = rotation * new Vector3(shiftX, shiftY, shiftZ);
     }
 }
