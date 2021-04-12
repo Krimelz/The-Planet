@@ -19,6 +19,7 @@ public class SceneManager : MonoBehaviour
     public Text energyForDivision;
     public Text speed;
     public Text size;
+    public Text currentEnergy;
     public SpawnType spawnType;
     public int startFoodAmount;
     public GameObject foodPrefab;
@@ -92,7 +93,10 @@ public class SceneManager : MonoBehaviour
                 ).normalized * foodSpawnRadius;
             }
 
-            Instantiate(foodPrefab, spawnPoint, Quaternion.identity);    
+            GameObject food = Instantiate(foodPrefab, spawnPoint, Quaternion.identity);
+            float foodSize = UnityEngine.Random.Range(0.05f, 0.15f);
+            food.GetComponent<Food>().energy = foodSize * 40f;
+            food.transform.localScale = new Vector3(foodSize, foodSize, foodSize);
         }
     }
 
@@ -101,6 +105,7 @@ public class SceneManager : MonoBehaviour
         if (viewer.IsCellViewing)
         {
             viewer.Shift(selectedCell);
+            currentEnergy.text = selectedCell.CurrentEnergy.ToString();
         }
 
 #if UNITY_STANALONE || UNITY_EDITOR
@@ -132,7 +137,7 @@ public class SceneManager : MonoBehaviour
     {
         Ray ray = Camera.main.ScreenPointToRay(pos);
         RaycastHit hit;
-        Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask: 1 << 9);
+        Physics.Raycast(ray, out hit, 15f, layerMask: 1 << 9);
 
         if (hit.collider != null)
         {
@@ -153,6 +158,7 @@ public class SceneManager : MonoBehaviour
         energyForDivision.text = selectedCell.DivisionSpeed.ToString();
         speed.text = selectedCell.Speed.ToString();
         size.text = selectedCell.Size.ToString();
+        currentEnergy.text = selectedCell.CurrentEnergy.ToString();
     }
 
     public void HideInfo()

@@ -54,6 +54,8 @@ public class Cell : MonoBehaviour
 
     public float Size => size;
 
+    public float CurrentEnergy => energy;
+
     public void Mutate()
     {
         float chance = UnityEngine.Random.Range(0f, 1f);
@@ -101,10 +103,9 @@ public class Cell : MonoBehaviour
         for (int i = 20; i < 24; i++) 
             resistance += gen[i];
 
-        divisionSpeed = 40f - divisionSpeed;
+        divisionSpeed = 30f - divisionSpeed;
         startEnergy += 5f;
-        size /= 4f;
-        size += 0.1f;
+        size = 0.25f + size / 4f;
         speed /= 2f;
     }
 

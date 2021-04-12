@@ -53,7 +53,7 @@ MonoBehaviour:
   startEnergy: 5
   speed: 5
   size: 1
-  viewRadius: 10
+  viewRadius: 20
   mutationChance: 0.2
   resistance: 0
   color: 0

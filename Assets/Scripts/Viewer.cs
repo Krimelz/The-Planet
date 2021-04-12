@@ -76,7 +76,7 @@ public class Viewer : MonoBehaviour
             {
                 Scale();
             }
-            else if (dot >= 0.8f)
+            else if (dot >= 0.8f && !IsCellViewing)
             {
                 Shift();
             }
