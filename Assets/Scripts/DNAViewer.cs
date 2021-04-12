@@ -14,7 +14,7 @@ public class DNAViewer : MonoBehaviour, IDragHandler
     public void OnDrag(PointerEventData eventData)
     {
 #if UNITY_STANDALONE || UNITY_EDITOR
-        y -= deltaMousePos().x;
+        y -= DeltaMousePos().x;
 #elif UNITY_ANDROID
         if (Input.touchCount == 1)
             y -= Input.GetTouch(0).deltaPosition.x;
@@ -23,7 +23,7 @@ public class DNAViewer : MonoBehaviour, IDragHandler
         dna.transform.rotation = Quaternion.Euler(new Vector3(0f, y, 0f));
     }
 
-    private Vector2 deltaMousePos()
+    private Vector2 DeltaMousePos()
     {
         currentPosition = Input.mousePosition;
         Vector2 deltaPosition = currentPosition - lastPosition;

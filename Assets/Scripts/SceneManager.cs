@@ -27,7 +27,6 @@ public class SceneManager : MonoBehaviour
     public float foodSpawnRate;
 
     private Cell selectedCell = null;
-    private bool isCellViewing = false;
 
     private void Start()
     {
@@ -99,7 +98,7 @@ public class SceneManager : MonoBehaviour
 
     private void Update()
     {
-        if (isCellViewing)
+        if (viewer.IsCellViewing)
         {
             viewer.Shift(selectedCell);
         }
@@ -160,14 +159,14 @@ public class SceneManager : MonoBehaviour
     {
         selectedCell = null;
         cellInfo.SetActive(false);
-        isCellViewing = false;
+        viewer.IsCellViewing = false;
     }
 
     public void ToCell()
     {
         if (selectedCell != null)
         {
-            isCellViewing = true;
+            viewer.IsCellViewing = true;
         }
     }
 

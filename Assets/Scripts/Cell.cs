@@ -279,8 +279,11 @@ public class Cell : MonoBehaviour
 
         foreach (var f in foods)
         {
-            if (Vector3.Distance(transform.position, f.transform.position) < minDistance)
+            float distance = Vector3.Distance(transform.position, f.transform.position);
+
+            if (distance < minDistance)
             {
+                minDistance = distance;
                 food = f.GetComponent<Food>();
             }
         }
