@@ -76,22 +76,12 @@ public class SceneManager : MonoBehaviour
 
             Vector3 spawnPoint;
 
-            if (spawnType == SpawnType.Box)
-            {
-                spawnPoint = new Vector3(
-                    UnityEngine.Random.Range(-foodSpawnArea.x, foodSpawnArea.x),
-                    UnityEngine.Random.Range(-foodSpawnArea.y, foodSpawnArea.y),
-                    UnityEngine.Random.Range(-foodSpawnArea.z, foodSpawnArea.z)
-                );
-            }
-            else
-            {
-                spawnPoint = new Vector3(
-                    UnityEngine.Random.Range(-1f, 1f),
-                    UnityEngine.Random.Range(-1f, 1f),
-                    UnityEngine.Random.Range(-1f, 1f)
-                ).normalized * foodSpawnRadius;
-            }
+            spawnPoint = new Vector3(
+                UnityEngine.Random.Range(-foodSpawnArea.x, foodSpawnArea.x),
+                UnityEngine.Random.Range(-foodSpawnArea.y, foodSpawnArea.y),
+                UnityEngine.Random.Range(-foodSpawnArea.z, foodSpawnArea.z)
+            );
+
 
             GameObject food = Instantiate(foodPrefab, spawnPoint, Quaternion.identity);
             float foodSize = UnityEngine.Random.Range(0.05f, 0.15f);
